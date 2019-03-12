@@ -45,8 +45,13 @@ options.Events = new ApiKeyEvents
     {
         if (context.ApiKey == "123")
         {
-            // Build and set the context.Principal if you wish to attach an identity to your incoming request.
-            context.Principal = new ClaimsPrincipal();
+            // Create and add your application's identities here, if required.
+            var identity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, "Fred")
+            });
+
+            context.Principal.AddIdentity(identity);
 
             // Mark success if you are happy the API key in the request is valid.
             context.Success();

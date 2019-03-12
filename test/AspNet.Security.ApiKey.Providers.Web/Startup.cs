@@ -50,13 +50,18 @@ namespace AspNet.Security.ApiKey.Providers.Web
                         {
                             if (context.ApiKey == "123")
                             {
-                                context.Principal = new ClaimsPrincipal();
+                                var identity = new ClaimsIdentity(new[]
+                                {
+                                    new Claim(ClaimTypes.Name, "Fred")
+                                });
+
+                                context.Principal.AddIdentity(identity);
 
                                 context.Success();
                             }
                             else if (context.ApiKey == "789")
                             {
-                                throw new NotSupportedException("You must upgrade.");
+                                context.Fail(new NotSupportedException("You must upgrade."));
                             }
 
                             return Task.CompletedTask;
