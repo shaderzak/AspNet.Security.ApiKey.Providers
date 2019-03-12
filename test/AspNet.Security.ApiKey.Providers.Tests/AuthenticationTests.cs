@@ -69,6 +69,15 @@ namespace AspNet.Security.ApiKey.Providers.Tests
         }
 
         [TestMethod]
+        public async Task Access_Protected_Resource_Using_Valid_ApiKey_Authentication_Should_Yield_Result()
+        {
+            var response = await this.api.CreateRequest("/api/authenticated/values").AddHeader("Authorization", "ApiKey 123").GetAsync();
+            var data = await response.Content.ReadAsStringAsync();
+
+            data.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [TestMethod]
         public async Task Access_Protected_Resource_Using_Invalid_ApiKey_Authentication_Should_Yield_401()
         {
             var response = await this.api.CreateRequest("/api/authenticated/values").AddHeader("Authorization", "ApiKey 456").GetAsync();

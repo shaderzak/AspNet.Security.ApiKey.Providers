@@ -17,6 +17,8 @@
     <PackageId>AspNet.Security.ApiKey.Providers</PackageId>
     <AssemblyName>AspNet.Security.ApiKey.Providers</AssemblyName>
     <Product>AspNet.Security.ApiKey.Providers</Product>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

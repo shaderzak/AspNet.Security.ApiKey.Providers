@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AspNet.Security.ApiKey.Providers.Abstractions;
@@ -42,6 +43,10 @@ namespace AspNet.Security.ApiKey.Providers
                     {
                         apiKey = header.Substring(this.Options.HeaderKey.Length).Trim();
                     }
+                    else
+                    {
+                        return AuthenticateResult.NoResult();
+                    }
                 }
 
                 var validateApiKeyContext = new ApiKeyValidatedContext(this.Context, this.Scheme, this.Options)
@@ -51,16 +56,20 @@ namespace AspNet.Security.ApiKey.Providers
 
                 await this.Events.ApiKeyValidated(validateApiKeyContext);
 
-                if (validateApiKeyContext.Result != null)
+                var result = validateApiKeyContext.Result ?? AuthenticateResult.NoResult();
+
+                if (result.Succeeded)
                 {
                     this.Logger.ApiKeyValidationSucceeded();
 
-                    return validateApiKeyContext.Result;
+                    validateApiKeyContext.Result.Principal.AddIdentity(new ClaimsIdentity(this.Scheme.Name));
+                }
+                else
+                {
+                    this.Logger.ApiKeyValidationFailed();
                 }
 
-                this.Logger.ApiKeyValidationFailed();
-
-                return AuthenticateResult.NoResult();
+                return result;
             }
             catch (Exception ex)
             {
