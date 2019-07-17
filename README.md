@@ -32,34 +32,37 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 You must then wire up your custom delegates to handle validation of incoming keys, as well as things like handling of errors during the authentication process:
 
 ```csharp
-options.Events = new ApiKeyEvents
+.AddApiKey(options =>
 {
-    // Optional
-    OnAuthenticationFailed = context =>
+    options.Events = new ApiKeyEvents
     {
-        Trace.TraceError(context.Exception.Message);
-
-        return Task.CompletedTask;
-    },
-    OnApiKeyValidated = context =>
-    {
-        if (context.ApiKey == "123")
+        // Optional
+        OnAuthenticationFailed = context =>
         {
-            // Create and add your application's identities here, if required.
-            var identity = new ClaimsIdentity(new[]
+            Trace.TraceError(context.Exception.Message);
+
+            return Task.CompletedTask;
+        },
+        OnApiKeyValidated = context =>
+        {
+            if (context.ApiKey == "123")
             {
-                new Claim(ClaimTypes.Name, "Fred")
-            });
+                // Create and add your application's identities here, if required.
+                var identity = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, "Fred")
+                });
 
-            context.Principal.AddIdentity(identity);
+                context.Principal.AddIdentity(identity);
 
-            // Mark success if you are happy the API key in the request is valid.
-            context.Success();
+                // Mark success if you are happy the API key in the request is valid.
+                context.Success();
+            }
+
+            return Task.CompletedTask;
         }
-
-        return Task.CompletedTask;
-    }
-};
+    };
+});
 ```
 
 ### Customising Header Values
